@@ -2,7 +2,7 @@
   "profiles": {
     "MarbleBlastPDBDumper": {
       "commandName": "Project",
-      "commandLineArgs": "\"D:\\Debugging\\Projects\\Marble Blast\\Marble Blast Online\\MBU_SHIP.pdb\""
+      "commandLineArgs": "\"N:\\Rartrin\\Documents\\Programming Projects\\GGC\\MBU_SHIP.pdb\""
     }
   }
 }
