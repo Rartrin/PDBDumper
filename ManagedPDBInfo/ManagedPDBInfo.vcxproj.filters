@@ -18,5 +18,8 @@
     <ClCompile Include="pdbwrapper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="VectorWrapper.h">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

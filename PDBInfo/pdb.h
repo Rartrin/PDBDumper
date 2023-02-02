@@ -37,11 +37,11 @@ public:
 
     static PDB* LoadPDB(const char* filename, char(* errorBuffer)[256] = nullptr);
 
-    const char* getFilename() { return mFilename; }
+    const char* getFilename() const { return mFilename; }
 
-    std::vector<ObjectFile*> getObjects() { return mObjects; }
-    std::vector<const char*> getSymbols() { return mSymbols; }
-    std::vector<const char*> getSourceFiles() { return mSourceFiles; }
+    const std::vector<ObjectFile*>& getObjects() const { return mObjects; }
+    const std::vector<const char*>& getSymbols() const { return mSymbols; }
+    const std::vector<const char*>& getSourceFiles() const { return mSourceFiles; }
 
 private:
     PDB();

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30907.101
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32819.101
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PDBDumper", "PDBDumper\PDBDumper.vcxproj", "{96B2D5A5-A326-4895-AE4E-45D276AB3CD2}"
 EndProject
@@ -11,11 +11,13 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ManagedPDBInfo", "ManagedPD
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PDBDumperSharp", "PDBDumperSharp\PDBDumperSharp.csproj", "{4F02E0AD-BE12-46DA-971D-17DB4F819E73}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PDBExplorer", "PDBExplorer\PDBExplorer.csproj", "{DD2EAB56-C1CC-4347-88C1-B9295FA168B0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PDBExplorer", "PDBExplorer\PDBExplorer.csproj", "{DD2EAB56-C1CC-4347-88C1-B9295FA168B0}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MarbleBlastPDBDumper", "MarbleBlastPDBDumper\MarbleBlastPDBDumper.csproj", "{B4C268A4-1433-4FCD-AD85-D335F59791FD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenericPDBDumper", "GenericPDBDumper\GenericPDBDumper.csproj", "{266C5DE5-9A2A-4AF4-8886-BB9B353FEE3A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GenericPDBDumper", "GenericPDBDumper\GenericPDBDumper.csproj", "{266C5DE5-9A2A-4AF4-8886-BB9B353FEE3A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PDBInfo.NET", "PDBInfo.NET\PDBInfo.NET.csproj", "{CA7FEC57-3824-4F74-9DD3-BA1655536BB3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -101,6 +103,18 @@ Global
 		{266C5DE5-9A2A-4AF4-8886-BB9B353FEE3A}.Release|Win32.Build.0 = Release|Any CPU
 		{266C5DE5-9A2A-4AF4-8886-BB9B353FEE3A}.Release|x64.ActiveCfg = Release|Any CPU
 		{266C5DE5-9A2A-4AF4-8886-BB9B353FEE3A}.Release|x64.Build.0 = Release|Any CPU
+		{CA7FEC57-3824-4F74-9DD3-BA1655536BB3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA7FEC57-3824-4F74-9DD3-BA1655536BB3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA7FEC57-3824-4F74-9DD3-BA1655536BB3}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{CA7FEC57-3824-4F74-9DD3-BA1655536BB3}.Debug|Win32.Build.0 = Debug|Any CPU
+		{CA7FEC57-3824-4F74-9DD3-BA1655536BB3}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{CA7FEC57-3824-4F74-9DD3-BA1655536BB3}.Debug|x64.Build.0 = Debug|Any CPU
+		{CA7FEC57-3824-4F74-9DD3-BA1655536BB3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA7FEC57-3824-4F74-9DD3-BA1655536BB3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CA7FEC57-3824-4F74-9DD3-BA1655536BB3}.Release|Win32.ActiveCfg = Release|Any CPU
+		{CA7FEC57-3824-4F74-9DD3-BA1655536BB3}.Release|Win32.Build.0 = Release|Any CPU
+		{CA7FEC57-3824-4F74-9DD3-BA1655536BB3}.Release|x64.ActiveCfg = Release|Any CPU
+		{CA7FEC57-3824-4F74-9DD3-BA1655536BB3}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

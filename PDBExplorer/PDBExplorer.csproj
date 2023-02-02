@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>WinExe</OutputType>
+    <OutputType>Exe</OutputType>
     <TargetFramework>net6.0-windows</TargetFramework>
     <Platforms>x64</Platforms>
 	  <ProjectGuid>{DD2EAB56-C1CC-4347-88C1-B9295FA168B0}</ProjectGuid>
@@ -22,5 +22,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ManagedPDBInfo\ManagedPDBInfo.vcxproj" />
+    <ProjectReference Include="..\PDBInfo.NET\PDBInfo.NET.csproj" />
   </ItemGroup>
 </Project>

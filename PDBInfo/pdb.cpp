@@ -6,6 +6,8 @@
 
 #include <iostream>
 
+#define INCLUDE_DECORATED
+
 PDB::PDB() : mFilename(nullptr), mMachineType(CV_CFL_80386)
 {
 

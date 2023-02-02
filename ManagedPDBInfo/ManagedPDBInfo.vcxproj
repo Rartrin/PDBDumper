@@ -157,6 +157,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="pdbwrapper.cpp" />
+    <ClCompile Include="VectorWrapper.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PDBInfo\PDBInfo.vcxproj">

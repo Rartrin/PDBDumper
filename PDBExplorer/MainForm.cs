@@ -6,9 +6,11 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using PDBInfo;
+using PDBInfoNET;
+//using static System.Net.WebRequestMethods;
 
 namespace PDBExplorer
 {
@@ -82,7 +84,7 @@ namespace PDBExplorer
 			try
 			{
 				_currentPDB = PDB.LoadPDB(file);
-			} catch (PDBException ex)
+			} catch (Exception ex)
 			{
 				MessageBox.Show(this, ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
@@ -105,9 +107,61 @@ namespace PDBExplorer
 			}
 		}
 
-		private void DoExport(string file)
+		private void DoExport(string filePath)
 		{
-			
+			//var json = new Dictionary<string, Dictionary<string, string[]>>();
+			//foreach (var obj in _currentPDB.Objects)
+			//{
+			//	var symbolIndices = obj.SymbolIndices;
+			//	var symbols = new string[symbolIndices.Count];
+			//	for(int i=0; i<symbolIndices.Count; i++)
+			//	{
+			//		symbols[i] = _currentPDB.Symbols[symbolIndices[i]];
+			//	}
+
+			//	var sourceFileIndices = obj.SourceFileIndices;
+			//	var sourceFiles = new string[sourceFileIndices.Count];
+			//	for(int i=0; i<sourceFileIndices.Count; i++)
+			//	{
+			//		sourceFiles[i] = _currentPDB.SourceFiles[sourceFileIndices[i]];
+			//	}
+
+			//	json.Add(obj.FileName, new Dictionary<string, string[]>
+			//	{
+			//		["symbols"] = symbols,
+			//		["sourceFiles"] = sourceFiles
+			//	});
+			//}
+			//using var file = File.Create(filePath);
+			//JsonSerializer.Serialize(file, json);
+
+			var ret = new StringBuilder();
+			ret.Append("{\n");
+			var objects = _currentPDB.Objects;
+			var symbols = _currentPDB.Symbols;
+			for(int i=0; i<objects.Count; i++)
+			{
+				if((i%100)==0)
+				{
+					Console.WriteLine(i);
+				}
+				var obj = objects[i];
+				ret.Append("\t\"");
+				ret.Append(obj.FileName);
+				ret.Append("\":\n\t{\n");
+
+				var symbolIndices = obj.SymbolIndices;
+				for(int s=0; s<symbolIndices.Count; s++)
+				{
+					ret.Append("\t\t\"");
+					ret.Append(symbols[symbolIndices[s]]);
+					ret.Append("\",\n");
+				}
+				ret.Append("\t},\n");
+			}
+			ret.Append("}\n");
+
+			File.WriteAllText(filePath, ret.ToString());
 		}
 
 		private void OnSelect(object obj)

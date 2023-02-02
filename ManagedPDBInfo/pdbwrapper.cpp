@@ -1,4 +1,5 @@
 #include "pdb.h"
+#include "VectorWrapper.h"
 
 namespace PDBInfo
 {
@@ -26,6 +27,46 @@ namespace PDBInfo
             }
     };
 
+    /*public ref class ObjectFileVectorWrapper : VectorWrapper<PDBInfo::PDB::ObjectFile^>
+	{
+		private:
+			const std::vector<::PDB::ObjectFile*>* data;
+
+		public:
+			virtual property int Count
+			{
+				int get() override
+				{
+					return data->size();
+				}
+			}
+			
+			virtual property PDBInfo::PDB::ObjectFile^ Item[int]
+			{
+				PDBInfo::PDB::ObjectFile^ get(int index) override
+				{
+					auto obj = data->operator[](index);
+					return gcnew PDBInfo::PDB::ObjectFile(obj);
+				}
+			}
+			
+			ObjectFileVectorWrapper(const std::vector<::PDB::ObjectFile*>* data)
+			{
+				this->data = data;
+			}
+
+			~ObjectFileVectorWrapper()
+			{
+				this->data = nullptr;
+			}
+	};*/
+
+    /*public ref class ObjectFileVectorWrapper : public ManageVectorWrapper<PDB::ObjectFile, ::PDB::ObjectFile*>
+	{
+		public:
+			ObjectFileVectorWrapper(const std::vector<::PDB::ObjectFile*>* data):ManageVectorWrapper(data){}
+	};*/
+
     public ref class PDB
     {
     private:
@@ -49,27 +90,29 @@ namespace PDBInfo
                 }
             }
 
-            property System::Collections::Generic::List<System::Int32>^ SymbolIndices
+            property System::Collections::Generic::IReadOnlyList<System::Int32>^ SymbolIndices
             {
-                System::Collections::Generic::List<System::Int32>^ get()
+                System::Collections::Generic::IReadOnlyList<System::Int32>^ get()
                 {
-                    auto ret = gcnew System::Collections::Generic::List<System::Int32>((System::Int32)mObjectfile->symbolIndices.size());
+                    return gcnew IntVectorWrapper(&mObjectfile->symbolIndices);
+                    /*auto ret = gcnew System::Collections::Generic::List<System::Int32>((System::Int32)mObjectfile->symbolIndices.size());
                     for (auto index : mObjectfile->symbolIndices)
                         ret->Add((System::Int32)index);
 
-                    return ret;
+                    return ret;*/
                 }
             }
 
-            property System::Collections::Generic::List<System::Int32>^ SourceFileIndices
+            property System::Collections::Generic::IReadOnlyList<System::Int32>^ SourceFileIndices
             {
-                System::Collections::Generic::List<System::Int32>^ get()
+                System::Collections::Generic::IReadOnlyList<System::Int32>^ get()
                 {
-                    auto ret = gcnew System::Collections::Generic::List<System::Int32>((System::Int32)mObjectfile->sourceFileIndices.size());
+                    return gcnew IntVectorWrapper(&mObjectfile->sourceFileIndices);
+                    /*auto ret = gcnew System::Collections::Generic::List<System::Int32>((System::Int32)mObjectfile->sourceFileIndices.size());
                     for (auto index : mObjectfile->sourceFileIndices)
                         ret->Add((System::Int32)index);
 
-                    return ret;
+                    return ret;*/
                 }
             }
         internal:
@@ -79,6 +122,12 @@ namespace PDBInfo
             }
         };
 
+        private:
+            List<ObjectFile^>^ objectFiles;
+            List<String^>^ symbols;
+            List<String^>^ sourceFiles;
+
+        public:
         ~PDB()
         {
             delete mPDB;
@@ -112,39 +161,54 @@ namespace PDBInfo
             return gcnew PDB(pdb);
         }
 
-        property System::Collections::Generic::List<ObjectFile^>^ Objects
+        property System::Collections::Generic::IReadOnlyList<ObjectFile^>^ Objects
         {
-            System::Collections::Generic::List<ObjectFile^>^ get()
+            System::Collections::Generic::IReadOnlyList<ObjectFile^>^ get()
             {
-                auto ret = gcnew System::Collections::Generic::List<ObjectFile^>((System::Int32)mPDB->getObjects().size());
-                for (auto obj : mPDB->getObjects())
-                    ret->Add(gcnew ObjectFile(obj));
-
-                return ret;
+                if(objectFiles == nullptr)
+                {
+                    auto nativeObjects = mPDB->getObjects();
+                    objectFiles = gcnew List<ObjectFile^>(nativeObjects.size());
+                    for(int i=0; i<nativeObjects.size(); i++)
+                    {
+                        objectFiles->Add(gcnew ObjectFile(nativeObjects[i]));
+                    }
+                }
+                return objectFiles;
             }
         }
 
-        property System::Collections::Generic::List<System::String^>^ Symbols
+        property System::Collections::Generic::IReadOnlyList<System::String^>^ Symbols
         {
-            System::Collections::Generic::List<System::String^>^ get()
+            System::Collections::Generic::IReadOnlyList<System::String^>^ get()
             {
-                auto ret = gcnew System::Collections::Generic::List<System::String^>((System::Int32)mPDB->getSymbols().size());
-                for (auto symbol : mPDB->getSymbols())
-                    ret->Add(gcnew System::String(symbol));
-
-                return ret;
+                if(symbols == nullptr)
+                {
+                    auto nativeSymbols = mPDB->getSymbols();
+                    symbols = gcnew List<String^>(nativeSymbols.size());
+                    for(int i=0; i<nativeSymbols.size(); i++)
+                    {
+                        symbols->Add(gcnew String(nativeSymbols[i]));
+                    }
+                }
+                return symbols;
             }
         }
 
-        property System::Collections::Generic::List<System::String^>^ SourceFiles
+        property System::Collections::Generic::IReadOnlyList<System::String^>^ SourceFiles
         {
-            System::Collections::Generic::List<System::String^>^ get()
+            System::Collections::Generic::IReadOnlyList<System::String^>^ get()
             {
-                auto ret = gcnew System::Collections::Generic::List<System::String^>((System::Int32)mPDB->getSourceFiles().size());
-                for (auto srcfile : mPDB->getSourceFiles())
-                    ret->Add(gcnew System::String(srcfile));
-
-                return ret;
+                if(symbols == nullptr)
+                {
+                    auto nativeSourceFiles = mPDB->getSourceFiles();
+                    sourceFiles = gcnew List<String^>(nativeSourceFiles.size());
+                    for(int i=0; i<nativeSourceFiles.size(); i++)
+                    {
+                        sourceFiles->Add(gcnew String(nativeSourceFiles[i]));
+                    }
+                }
+                return sourceFiles;
             }
         }
     };
