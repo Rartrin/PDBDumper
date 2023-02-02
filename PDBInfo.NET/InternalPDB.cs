@@ -1,17 +1,16 @@
-﻿using System.Runtime.InteropServices;
-using Dia2;
+﻿using Dia2;
 
 namespace PDBInfoNET
 {
-	public class InternalPDB
+	public sealed class InternalPDB
 	{
-		protected IDiaDataSource? mDataSource;
-		protected IDiaSession? mSession;
-		protected IDiaSymbol? mGlobalSymbol;
+		private IDiaDataSource? mDataSource;
+		private IDiaSession? mSession;
+		private IDiaSymbol? mGlobalSymbol;
 
-		public IDiaDataSource getDataSource() => mDataSource!;
-		public IDiaSession getSession() => mSession!;
-		public IDiaSymbol getGlobalSymbol() => mGlobalSymbol!;
+		public IDiaDataSource DataSource => mDataSource!;
+		public IDiaSession Session => mSession!;
+		public IDiaSymbol GlobalSymbol => mGlobalSymbol!;
 
 		private InternalPDB()
 		{
@@ -68,7 +67,7 @@ namespace PDBInfoNET
 			if (wszExt == ".pdb")
 			{
 				// Open and prepare a program database (.pdb) file as a debug data source
-				hr = api.mDataSource.loadDataFromPdb(file);
+				hr = api.mDataSource.LoadDataFromPdb(file);
 
 				if(hr!=0)
 				{
@@ -81,14 +80,14 @@ namespace PDBInfoNET
 			}
 
 			// Open a session for querying symbols
-			hr = api.mDataSource.openSession(out api.mSession);
+			hr = api.mDataSource.OpenSession(out api.mSession);
 			if(hr!=0)
 			{
 				throw new Exception("openSession failed - HRESULT = " + hr);
 			}
 
 			// Retrieve a reference to the global scope
-			api.mGlobalSymbol = api.mSession.get_globalScope();
+			api.mGlobalSymbol = api.mSession.GlobalScope;
 
 			//if (hr != S_OK)
 			//{

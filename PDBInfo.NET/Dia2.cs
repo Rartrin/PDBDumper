@@ -1,4 +1,4 @@
-﻿//Taken from https://github.com/microsoft/DirectXShaderCompiler/blob/main/tools/clang/tools/dotnetc/dia2.cs
+﻿//Originally taken from https://github.com/microsoft/DirectXShaderCompiler/blob/main/tools/clang/tools/dotnetc/dia2.cs
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -10,7 +10,6 @@
 //                                                                           //
 ///////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -19,40 +18,33 @@ using System.Runtime.InteropServices.ComTypes;
 namespace Dia2
 {
 
-	[ComImport]
-	[Guid("e6756135-1e65-4d17-8576-610761398c3c")]
-	public interface DiaDataSource:IDiaDataSource
-	{
+	[ComImport,Guid("e6756135-1e65-4d17-8576-610761398c3c")]
+	public interface DiaDataSource:IDiaDataSource{}
 
-	}
-
-	[ComImport]
-	[Guid("79F1BB5F-B66E-48e5-B6A9-1545C323CA3D")]
+	[ComImport,Guid("79F1BB5F-B66E-48e5-B6A9-1545C323CA3D")]
 	[InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
 	public interface IDiaDataSource
 	{
-		[return: MarshalAs(UnmanagedType.BStr)]
-		public string get_lastError();
-		public int loadDataFromPdb(/*LPCOLESTR*/[MarshalAs(UnmanagedType.LPWStr)]string path);
+		public string LastError{[return: MarshalAs(UnmanagedType.BStr)]get;}//get_lastError
+		public int LoadDataFromPdb(/*LPCOLESTR*/[MarshalAs(UnmanagedType.LPWStr)]string path);//loadDataFromPdb
 		
 		void loadAndValidateDataFromPdb(string path, ref Guid pcsig70, UInt32 sig, UInt32 age);
 		void loadDataForExe(string executable, string searchPath, [MarshalAs(UnmanagedType.IUnknown)] object pCallback);
 		void loadDataFromIStream(IStream pIStream);
 		
-		public int openSession(out IDiaSession diaSession);
+		public int OpenSession(out IDiaSession diaSession);//openSession
 		// loadDataFromCodeViewInfo
 		// loadDataFromMiscInfo
 	}
 
-	[ComImport]
-	[Guid("2F609EE1-D1C8-4E24-8288-3326BADCD211")]
+	[ComImport,Guid("2F609EE1-D1C8-4E24-8288-3326BADCD211")]
 	[InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
 	public interface IDiaSession
 	{
 		UInt64 get_loadAddress();
 		void put_loadAddress(UInt64 value);
 		
-		public IDiaSymbol get_globalScope();
+		public IDiaSymbol GlobalScope{get;}//get_globalScope
 
 		IDiaEnumTables getEnumTables();
 		void getSymbolsByAddr();
@@ -70,7 +62,7 @@ namespace Dia2
 		void findSymbolByRVAEx();
 		void findSymbolByVAEx();
 
-		public int findFile(IDiaSymbol pCompiland, /*LPCOLESTR*/[MarshalAs(UnmanagedType.LPWStr)]string? name, int compareFlags, out IDiaEnumSourceFiles ppResult);
+		public int FindFile(IDiaSymbol pCompiland, /*LPCOLESTR*/[MarshalAs(UnmanagedType.LPWStr)]string? name, int compareFlags, out IDiaEnumSourceFiles ppResult);//findFile
 
 		void findFileById();
 		void findLines();
@@ -114,16 +106,14 @@ namespace Dia2
 		void findInputAssemblyFile();
 	}
 
-	[ComImport]
-	[Guid("cb787b2f-bd6c-4635-ba52-933126bd2dcd")]
+	[ComImport,Guid("cb787b2f-bd6c-4635-ba52-933126bd2dcd")]
 	[InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
 	public interface IDiaSymbol
 	{
 		UInt32 get_symIndexId();
 		UInt32 get_symTag();
 
-		[return: MarshalAs(UnmanagedType.BStr)]
-		public string get_name();
+		public string Name{[return: MarshalAs(UnmanagedType.BStr)]get;}//get_name
 
 		IDiaSymbol get_lexicalParent();
 		IDiaSymbol get_classParent();
@@ -199,8 +189,7 @@ namespace Dia2
 		bool get_msil();
 		UInt32 get_virtualBaseDispIndex();
 
-		[return: MarshalAs(UnmanagedType.BStr)]
-		public string get_undecoratedName();
+		public string UndecoratedName{[return: MarshalAs(UnmanagedType.BStr)]get;}//get_undecoratedName
 
 		UInt32 get_age();
 		UInt32 get_signature();
@@ -213,7 +202,7 @@ namespace Dia2
 		UInt32 get_upperBoundId();
 		void get_dataBytes(UInt32 cbData, out UInt32 pcbData, out byte[] pbData);
 
-		public int findChildren(SymTagEnum symTag, /*LPCOLESTR*/[MarshalAs(UnmanagedType.LPWStr)]string? name, int compareFlags, out IDiaEnumSymbols ppResult);
+		public int FindChildren(SymTagEnum symTag, /*LPCOLESTR*/[MarshalAs(UnmanagedType.LPWStr)]string? name, int compareFlags, out IDiaEnumSymbols ppResult);//findChildren
 		
 		void findChildrenEx();
 		void findChildrenExByAddr();
@@ -224,7 +213,7 @@ namespace Dia2
 		UInt32 get_targetRelativeVirtualAddress();
 		UInt64 get_targetVirtualAddress();
 		
-		public UInt32 get_machineType();
+		public UInt32 MachineType{get;}//get_machineType
 
 		UInt32 get_oemId();
 		UInt32 get_oemSymbolId();
@@ -374,8 +363,7 @@ namespace Dia2
 		UInt32 get_bindSpace();
 		UInt32 get_bindSlot();
 	}
-	[ComImport]
-	[Guid("CAB72C48-443B-48f5-9B0B-42F0820AB29A")]
+	[ComImport,Guid("CAB72C48-443B-48f5-9B0B-42F0820AB29A")]
 	[InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
 	public interface IDiaEnumSymbols:IEnumerable
 	{
@@ -386,8 +374,7 @@ namespace Dia2
 		//int get_count(out int pRetVal);
 	}
 
-	[ComImport]
-	[Guid("C65C2B0A-1150-4d7a-AFCC-E05BF3DEE81E")]
+	[ComImport,Guid("C65C2B0A-1150-4d7a-AFCC-E05BF3DEE81E")]
 	[InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
 	public interface IDiaEnumTables
 	{
@@ -402,74 +389,70 @@ namespace Dia2
 		//IDiaEnumTables Clone();
 	}
 
-	[ComImport]
-	[Guid("B388EB14-BE4D-421d-A8A1-6CF7AB057086")]
-	[InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-	public interface IDiaLineNumber
-	{
-		//IDiaSymbol get_compiland();
-		//IDiaSourceFile get_sourceFile();
-		//uint get_lineNumber();
-		//uint get_lineNumberEnd();
-		//uint get_columnNumber();
-		//uint get_columnNumberEnd();
-		//uint get_addressSection();
-		//uint get_addressOffset();
-		//uint get_relativeVirtualAddress();
-		//UInt64 get_virtualAddress();
-		//uint get_length();
-		//uint get_sourceFileId();
-		//bool get_statement();
-		//uint get_compilandId();
-	}
+	//[ComImport,Guid("B388EB14-BE4D-421d-A8A1-6CF7AB057086")]
+	//[InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+	//public interface IDiaLineNumber
+	//{
+	//	//IDiaSymbol get_compiland();
+	//	//IDiaSourceFile get_sourceFile();
+	//	//uint get_lineNumber();
+	//	//uint get_lineNumberEnd();
+	//	//uint get_columnNumber();
+	//	//uint get_columnNumberEnd();
+	//	//uint get_addressSection();
+	//	//uint get_addressOffset();
+	//	//uint get_relativeVirtualAddress();
+	//	//UInt64 get_virtualAddress();
+	//	//uint get_length();
+	//	//uint get_sourceFileId();
+	//	//bool get_statement();
+	//	//uint get_compilandId();
+	//}
 
-	[ComImport]
-	[Guid("0CF4B60E-35B1-4c6c-BDD8-854B9C8E3857")]
-	[InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-	public interface IDiaSectionContrib
-	{
-		//IDiaSymbol get_compiland();
-		//uint get_addressSection();
-		//uint get_addressOffset();
-		//uint get_relativeVirtualAddress();
-		//UInt64 get_virtualAddress();
-		//uint get_length();
-		//bool get_notPaged();
-		//bool get_code();
-		//bool get_initializedData();
-		//bool get_uninitializedData();
-		//bool get_remove();
-		//bool get_comdat();
-		//bool get_discardable();
-		//bool get_notCached();
-		//bool get_share();
-		//bool get_execute();
-		//bool get_read();
-		//bool get_write();
-		//uint get_dataCrc();
-		//uint get_relocationsCrc();
-		//uint get_compilandId();
-		//bool get_code16bit();
-	}
+	//[ComImport,Guid("0CF4B60E-35B1-4c6c-BDD8-854B9C8E3857")]
+	//[InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+	//public interface IDiaSectionContrib
+	//{
+	//	//IDiaSymbol get_compiland();
+	//	//uint get_addressSection();
+	//	//uint get_addressOffset();
+	//	//uint get_relativeVirtualAddress();
+	//	//UInt64 get_virtualAddress();
+	//	//uint get_length();
+	//	//bool get_notPaged();
+	//	//bool get_code();
+	//	//bool get_initializedData();
+	//	//bool get_uninitializedData();
+	//	//bool get_remove();
+	//	//bool get_comdat();
+	//	//bool get_discardable();
+	//	//bool get_notCached();
+	//	//bool get_share();
+	//	//bool get_execute();
+	//	//bool get_read();
+	//	//bool get_write();
+	//	//uint get_dataCrc();
+	//	//uint get_relocationsCrc();
+	//	//uint get_compilandId();
+	//	//bool get_code16bit();
+	//}
 
-	[ComImport]
-	[Guid("0775B784-C75B-4449-848B-B7BD3159545B")]
-	[InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-	public interface IDiaSegment
-	{
-		//uint get_frame();
-		//uint get_offset();
-		//uint get_length();
-		//bool get_read();
-		//bool get_write();
-		//bool get_execute();
-		//uint get_addressSection();
-		//uint get_relativeVirtualAddress();
-		//UInt64 get_virtualAddress();
-	}
+	//[ComImport,Guid("0775B784-C75B-4449-848B-B7BD3159545B")]
+	//[InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+	//public interface IDiaSegment
+	//{
+	//	//uint get_frame();
+	//	//uint get_offset();
+	//	//uint get_length();
+	//	//bool get_read();
+	//	//bool get_write();
+	//	//bool get_execute();
+	//	//uint get_addressSection();
+	//	//uint get_relativeVirtualAddress();
+	//	//UInt64 get_virtualAddress();
+	//}
 
-	[ComImport]
-	[Guid("00000100-0000-0000-C000-000000000046")]
+	[ComImport,Guid("00000100-0000-0000-C000-000000000046")]
 	[InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
 	public interface IEnumUnknown
 	{
@@ -481,22 +464,19 @@ namespace Dia2
 		//IEnumUnknown Clone();
 	}
 
-	[ComImport]
-	[Guid("A2EF5353-F5A8-4eb3-90D2-CB526ACB3CDD")]
+	[ComImport,Guid("A2EF5353-F5A8-4eb3-90D2-CB526ACB3CDD")]
 	[InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
 	public interface IDiaSourceFile
 	{
 		uint get_uniqueId();
 		
-		[return: MarshalAs(UnmanagedType.BStr)]
-		public string get_fileName();
+		public string FileName{[return: MarshalAs(UnmanagedType.BStr)]get;}//get_fileName
 
 		void /* IDiaEnumSymbols */ get_compilands();
 		//[PreserveSig] int get_checksum(uint cbData, out uint pcbData,
 		//	[MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.I1, SizeParamIndex = 1)] ref byte[] pbData);
 	}
-	[ComImport]
-	[Guid("10F3DBD9-664F-4469-B808-9471C7A50538")]
+	[ComImport,Guid("10F3DBD9-664F-4469-B808-9471C7A50538")]
 	[InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
 	public interface IDiaEnumSourceFiles:IEnumerable
 	{
@@ -506,47 +486,44 @@ namespace Dia2
 		new IEnumerator GetEnumerator();
 	}
 
-	[ComImport]
-	[Guid("AE605CDC-8105-4a23-B710-3259F1E26112")]
-	[InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-	public interface IDiaInjectedSource
-	{
-		//uint get_crc();
-		//uint get_length();
+	//[ComImport,Guid("AE605CDC-8105-4a23-B710-3259F1E26112")]
+	//[InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+	//public interface IDiaInjectedSource
+	//{
+	//	//uint get_crc();
+	//	//uint get_length();
 
-		//[return: MarshalAs(UnmanagedType.BStr)]
-		//string get_fileName();
-		//[return: MarshalAs(UnmanagedType.BStr)]
-		//string get_objectFilename();
-		//[return: MarshalAs(UnmanagedType.BStr)]
-		//string get_virtualFilename();
-		//uint get_sourceCompression();
-		//[PreserveSig]
-		//int get_source(uint cbData, out uint pcbData,
-		//	[MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U8, SizeParamIndex = 0)] byte[] pbData);
+	//	//[return: MarshalAs(UnmanagedType.BStr)]
+	//	//string get_fileName();
+	//	//[return: MarshalAs(UnmanagedType.BStr)]
+	//	//string get_objectFilename();
+	//	//[return: MarshalAs(UnmanagedType.BStr)]
+	//	//string get_virtualFilename();
+	//	//uint get_sourceCompression();
+	//	//[PreserveSig]
+	//	//int get_source(uint cbData, out uint pcbData,
+	//	//	[MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U8, SizeParamIndex = 0)] byte[] pbData);
+	//}
 
-	}
+	//[ComImport,Guid("4A59FB77-ABAC-469b-A30B-9ECC85BFEF14")]
+	//[InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+	//public interface IDiaTable // : IEnumUnknown - need to replay vtable
+	//{
+	//	//UInt32 Next(UInt32 count,
+	//	//	[MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.IUnknown, SizeParamIndex = 2)]
+	//	//	ref object[] tables, out UInt32 fetched);
+	//	//void Skip(UInt32 count);
+	//	//void Reset();
+	//	//IEnumUnknown Clone();
 
-	[ComImport]
-	[Guid("4A59FB77-ABAC-469b-A30B-9ECC85BFEF14")]
-	[InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-	public interface IDiaTable // : IEnumUnknown - need to replay vtable
-	{
-		//UInt32 Next(UInt32 count,
-		//	[MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.IUnknown, SizeParamIndex = 2)]
-		//	ref object[] tables, out UInt32 fetched);
-		//void Skip(UInt32 count);
-		//void Reset();
-		//IEnumUnknown Clone();
-
-		//[return: MarshalAs(UnmanagedType.IUnknown)]
-		//object get__NewEnum();
-		//[return: MarshalAs(UnmanagedType.BStr)]
-		//string get_name();
-		//Int32 get_Count();
-		//[return: MarshalAs(UnmanagedType.IUnknown)]
-		//object Item(UInt32 index);
-	}
+	//	//[return: MarshalAs(UnmanagedType.IUnknown)]
+	//	//object get__NewEnum();
+	//	//[return: MarshalAs(UnmanagedType.BStr)]
+	//	//string get_name();
+	//	//Int32 get_Count();
+	//	//[return: MarshalAs(UnmanagedType.IUnknown)]
+	//	//object Item(UInt32 index);
+	//}
 
 	public enum SymTagEnum
 	{

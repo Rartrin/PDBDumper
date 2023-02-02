@@ -20,20 +20,24 @@ namespace PDBInfoNET
 			internal readonly List<int> symbolIndices = new List<int>();
 			internal readonly List<int> sourceFileIndices = new List<int>();
 
-			public string? FileName{get;init;}
+			public string FileName{get;}
 
 			public IReadOnlyList<int> SymbolIndices => symbolIndices;
 			public IReadOnlyList<int> SourceFileIndices => sourceFileIndices;
-		}
 
-		private uint mMachineType;
+			public ObjectFile(string filename)
+			{
+				FileName = filename;
+			}
+		}
 
 		private readonly List<ObjectFile> mObjects = new List<ObjectFile>();
 		private readonly List<string> mSymbols = new List<string>();
 		private readonly List<string> mSourceFiles = new List<string>();
 
 		
-		public string FileName{get;private set;}
+		public string FileName{get;}
+		public uint MachineType{get;} 
 
 		public IReadOnlyList<ObjectFile> Objects => mObjects;
 		public IReadOnlyList<string> Symbols => mSymbols;
@@ -45,26 +49,16 @@ namespace PDBInfoNET
 		{
 			InternalPDB ipdb = InternalPDB.LoadPDB(filename);
 
-			PDB pdb = new PDB();
-			pdb.FileName = filename;
-
 			// Set Machine type for getting correct register names
-			uint dwMachType = ipdb.getGlobalSymbol().get_machineType();
-			//if()
+			uint machineType = ipdb.GlobalSymbol.MachineType switch
 			{
-				switch (dwMachType)
-				{
-					case 0x014c://IMAGE_FILE_MACHINE_I386
-						pdb.mMachineType = 0x03;//CV_CFL_80386
-						break;
-					case 0x0200://IMAGE_FILE_MACHINE_IA64
-						pdb.mMachineType = 0x80;//CV_CFL_IA64
-						break;
-					case 0x8664://IMAGE_FILE_MACHINE_AMD64
-						pdb.mMachineType = 0xD0;//CV_CFL_AMD64
-						break;
-				}
-			}
+				0x014c => 0x03,//IMAGE_FILE_MACHINE_I386 -> CV_CFL_80386
+				0x0200 => 0x80,//IMAGE_FILE_MACHINE_IA64 -> CV_CFL_IA64
+				0x8664 => 0xD0,//IMAGE_FILE_MACHINE_AMD64 -> CV_CFL_AMD64
+				_ => 0x03//defaults to CV_CFL_80386
+			};
+
+			PDB pdb = new PDB(filename, machineType);
 
 			// Populate all the data for this class.
 			if (!pdb.PopulateData(ipdb))
@@ -75,14 +69,16 @@ namespace PDBInfoNET
 			return pdb;
 		}
 
-		private PDB()
+		private PDB(string filename, uint machineType)
 		{
-			mMachineType = 0x03;//CV_CFL_80386
+			FileName = filename;
+			MachineType = machineType;
 		}
+
 		private bool PopulateData(InternalPDB ipdb)
 		{
 			// Retrieve the compilands first
-			if(ipdb.getGlobalSymbol().findChildren(SymTagEnum.SymTagCompiland, null, 0/*Namespace search options*/, out var pEnumSymbols) != 0)
+			if(ipdb.GlobalSymbol.FindChildren(SymTagEnum.SymTagCompiland, null, 0/*Namespace search options*/, out var pEnumSymbols) != 0)
 			{
 				return false;
 			}
@@ -91,7 +87,7 @@ namespace PDBInfoNET
 			{
 				// Retrieve the name of the module
 
-				string objectfileName = pCompiland.get_name();
+				string objectfileName = pCompiland.Name;
 
 				if(objectfileName == null)
 				{
@@ -100,10 +96,12 @@ namespace PDBInfoNET
 
 				ObjectFile? objectfile = null;
 
-				for (int i = 0; i < mObjects.Count(); i++)
+				for (int i = 0; i < mObjects.Count; i++)
 				{
 					if (mObjects[i] == null)
+					{
 						continue;
+					}
 
 					if (mObjects[i].FileName == objectfileName)
 					{
@@ -114,93 +112,57 @@ namespace PDBInfoNET
 
 				if (objectfile == null)
 				{
-					objectfile = new ObjectFile
-					{
-						FileName = objectfileName
-					};
+					objectfile = new ObjectFile(objectfileName);
 
 					mObjects.Add(objectfile);
 				}
 
 				// Find all the symbols defined in this compiland
 				const SymTagEnum symbolType = SymTagEnum.SymTagFunction; // use SymTagNull to get every symbol type
-				if (pCompiland.findChildren(symbolType, null, 0/*Namespace search options*/, out var pEnumChildren) == 0)
+				if (pCompiland.FindChildren(symbolType, null, 0/*Namespace search options*/, out var pEnumChildren) == 0)
 				{
 					foreach(IDiaSymbol pSymbol in pEnumChildren)
 					{
-
-						var symbolname = pSymbol.get_undecoratedName()
+						string symbolname = pSymbol.UndecoratedName;
 						#if INCLUDE_DECORATED
-						 ?? pSymbol.get_name()
+						symbolname ??= pSymbol.Name;
 						#endif
-						;
-						if(symbolname != null)
+						if(symbolname == null)
 						{
-							#if INCLUDE_DECORATED
-							if (symbolname == "obj") // For some reason this symbol always exists on all objects
-							{
-								continue;
-							}
-							#endif
+							continue;
+						}
+						#if INCLUDE_DECORATED
+						if (symbolname == "obj") // For some reason this symbol always exists on all objects
+						{
+							continue;
+						}
+						#endif
 
-							int index = -1;
+						// Check if it already exists
+						int index = mSourceFiles.IndexOf(symbolname);
 
-							// Check if it already exists
-							for (int i = 0; i < mSymbols.Count; i++)
-							{
-								if (mSymbols[i] == null)
-									continue;
-
-								if (mSymbols[i] == symbolname)
-								{
-									index = i;
-									break;
-								}
-							}
-
-		// If not, add it
-							if (index == -1)
-							{
-								index = mSymbols.Count;
-								mSymbols.Add(symbolname);
-							}
-
-							objectfile.symbolIndices.Add(index);
+						// If not, add it
+						if (index == -1)
+						{
+							index = mSymbols.Count;
+							mSymbols.Add(symbolname);
 						}
 
-						//TODO: Need Release?
-						//pSymbol.Release();
+						objectfile.symbolIndices.Add(index);
 					}
-
-					//TODO: Need Release?
-					//pEnumChildren.Release();
 				}
 
 
 				// Every compiland could contain multiple references to the source files which were used to build it
 				// Retrieve all source files by compiland by passing NULL for the name of the source file
-				if (ipdb.getSession().findFile(pCompiland, null, 0/*Namespace search options*/, out var pEnumSourceFiles)==0)
+				if (ipdb.Session.FindFile(pCompiland, null, 0/*Namespace search options*/, out var pEnumSourceFiles)==0)
 				{
 					foreach(IDiaSourceFile pSourceFile in pEnumSourceFiles)
 					{
-						if (pSourceFile.get_fileName() is string filename)
+						if (pSourceFile.FileName is string filename)
 						{
-							int index = -1;
-
 							// Check if it already exists
-							for (int i = 0; i < mSourceFiles.Count; i++)
-							{
-								if (mSourceFiles[i] == null)
-								{
-									continue;
-								}
-
-								if (mSourceFiles[i] == filename)
-								{
-									index = i;
-									break;
-								}
-							}
+							int index = mSourceFiles.IndexOf(filename);
 
 							// If not, add it
 							if (index == -1)
@@ -211,18 +173,9 @@ namespace PDBInfoNET
 
 							objectfile.sourceFileIndices.Add(index);
 						}
-						//TODO: Need Release?
-						//pSourceFile.Release();
 					}
-					//TODO: Need Release?
-					//pEnumSourceFiles.Release();
 				}
-				//TODO: Need Release?
-				//pCompiland.Release();
 			}
-			//TODO: Need Release?
-			//pEnumSymbols.Release();
-
 			return true;
 		}
 	}
